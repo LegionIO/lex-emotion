@@ -42,10 +42,10 @@ module Legion
 
           def magnitude(valence)
             Math.sqrt(
-              valence[:urgency]**2 +
-              valence[:importance]**2 +
-              valence[:novelty]**2 +
-              valence[:familiarity]**2
+              (valence[:urgency]**2) +
+              (valence[:importance]**2) +
+              (valence[:novelty]**2) +
+              (valence[:familiarity]**2)
             )
           end
 
@@ -72,9 +72,9 @@ module Legion
           end
 
           def modulate_salience(base_salience, valence)
-            boost = (valence[:urgency] * URGENCY_ATTENTION_WEIGHT +
-                     valence[:importance] * IMPORTANCE_ATTENTION_WEIGHT +
-                     valence[:novelty] * NOVELTY_ATTENTION_WEIGHT) * ATTENTION_MULTIPLIER
+            boost = ((valence[:urgency] * URGENCY_ATTENTION_WEIGHT) +
+                     (valence[:importance] * IMPORTANCE_ATTENTION_WEIGHT) +
+                     (valence[:novelty] * NOVELTY_ATTENTION_WEIGHT)) * ATTENTION_MULTIPLIER
             clamp(base_salience + boost)
           end
 

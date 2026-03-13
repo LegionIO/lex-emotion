@@ -40,8 +40,8 @@ module Legion
           def emotional_state(**)
             momentum = emotion_momentum
             {
-              momentum:  momentum.emotional_state,
-              baseline:  emotion_baseline.dimensions
+              momentum: momentum.emotional_state,
+              baseline: emotion_baseline.dimensions
             }
           end
 

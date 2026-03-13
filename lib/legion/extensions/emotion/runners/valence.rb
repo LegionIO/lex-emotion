@@ -8,7 +8,7 @@ module Legion
           include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers) &&
                                                       Legion::Extensions::Helpers.const_defined?(:Lex)
 
-          def evaluate_valence(signal:, source_type: :ambient, deadline: nil, domain: nil, **) # rubocop:disable Metrics/MethodLength
+          def evaluate_valence(signal:, source_type: :ambient, deadline: nil, domain: nil, **)
             baseline = emotion_baseline
 
             urgency_raw = compute_urgency(signal, source_type, deadline)
@@ -80,7 +80,7 @@ module Legion
             (deadline_urgency * 0.5) + (source_urgency * 0.3) + (pattern_urgency * 0.2)
           end
 
-          def compute_importance(signal, domain)
+          def compute_importance(signal, _domain)
             domain_weight = signal.is_a?(Hash) ? (signal[:domain_weight] || 0.5) : 0.5
             impact_scope = signal.is_a?(Hash) ? (signal[:impact_scope] || 0.3) : 0.3
             reversibility = signal.is_a?(Hash) ? (signal[:reversibility] || 0.5) : 0.5

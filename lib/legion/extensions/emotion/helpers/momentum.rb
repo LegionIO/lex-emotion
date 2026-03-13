@@ -35,9 +35,9 @@ module Legion
 
           def emotional_state
             {
-              valence_ema: @valence_ema,
-              arousal_ema: @arousal_ema,
-              stability:   @stability,
+              valence_ema:  @valence_ema,
+              arousal_ema:  @arousal_ema,
+              stability:    @stability,
               history_size: @history.size
             }
           end

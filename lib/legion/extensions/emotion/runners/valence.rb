@@ -30,10 +30,16 @@ module Legion
               baseline.update(dim, raw)
             end
 
+            magnitude = Helpers::Valence.magnitude(valence)
+            dominant = Helpers::Valence.dominant_dimension(valence)
+            Legion::Logging.debug "[emotion] valence: source=#{source_type} magnitude=#{magnitude.round(2)} dominant=#{dominant} " \
+                                  "u=#{valence[:urgency].round(2)} i=#{valence[:importance].round(2)} " \
+                                  "n=#{valence[:novelty].round(2)} f=#{valence[:familiarity].round(2)}"
+
             {
               valence:            valence,
-              magnitude:          Helpers::Valence.magnitude(valence),
-              dominant_dimension: Helpers::Valence.dominant_dimension(valence)
+              magnitude:          magnitude,
+              dominant_dimension: dominant
             }
           end
 
@@ -42,6 +48,7 @@ module Legion
             arousal = Helpers::Valence.compute_arousal(valences)
             dominant = Helpers::Valence.dominant_dimension(aggregated)
 
+            Legion::Logging.debug "[emotion] aggregate: count=#{valences.size} arousal=#{arousal.round(2)} dominant=#{dominant}"
             {
               aggregate: aggregated,
               arousal:   arousal,
@@ -52,11 +59,15 @@ module Legion
 
           def modulate_attention(base_salience:, valence:, **)
             modulated = Helpers::Valence.modulate_salience(base_salience, valence)
-            { original: base_salience, modulated: modulated, boost: modulated - base_salience }
+            boost = modulated - base_salience
+            Legion::Logging.debug "[emotion] attention modulation: base=#{base_salience.round(2)} modulated=#{modulated.round(2)} boost=#{boost.round(2)}"
+            { original: base_salience, modulated: modulated, boost: boost }
           end
 
           def compute_arousal(valences:, **)
-            { arousal: Helpers::Valence.compute_arousal(valences) }
+            arousal = Helpers::Valence.compute_arousal(valences)
+            Legion::Logging.debug "[emotion] arousal=#{arousal.round(2)} from #{valences.size} valences"
+            { arousal: arousal }
           end
 
           private

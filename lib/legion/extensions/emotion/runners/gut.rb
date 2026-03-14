@@ -15,12 +15,11 @@ module Legion
             aggregate = Helpers::Valence.aggregate(valences)
             dominant = Helpers::Valence.dominant_dimension(aggregate)
 
-            # Gut instinct is the compressed parallel query of full memory + emotional state
-            # High arousal + high importance = caution signal
-            # High novelty + low familiarity = exploration signal
-            # High urgency + high importance = alarm signal
             signal = determine_signal(aggregate, arousal)
             confidence = compute_confidence(valences, memory_signals)
+
+            Legion::Logging.debug "[emotion] gut instinct: signal=#{signal} confidence=#{confidence.round(2)} " \
+                                  "arousal=#{arousal.round(2)} dominant=#{dominant} reliable=#{confidence >= confidence_threshold}"
 
             result = {
               signal:     signal,
@@ -39,8 +38,10 @@ module Legion
 
           def emotional_state(**)
             momentum = emotion_momentum
+            state = momentum.emotional_state
+            Legion::Logging.debug "[emotion] state query: stability=#{state[:stability]&.round(2)}"
             {
-              momentum: momentum.emotional_state,
+              momentum: state,
               baseline: emotion_baseline.dimensions
             }
           end
@@ -70,7 +71,6 @@ module Legion
           def compute_confidence(valences, memory_signals)
             return 0.0 if valences.empty?
 
-            # Confidence based on consensus among valences and memory evidence
             magnitudes = valences.map { |v| Helpers::Valence.magnitude(v) }
             mean_mag = magnitudes.sum / magnitudes.size
             variance = magnitudes.sum { |m| (m - mean_mag)**2 } / magnitudes.size

@@ -53,4 +53,21 @@ RSpec.describe Legion::Extensions::Emotion::Runners::Gut do
       expect(state).to have_key(:baseline)
     end
   end
+
+  describe '#decay_momentum' do
+    it 'returns decayed: true' do
+      result = client.decay_momentum
+      expect(result[:decayed]).to be true
+    end
+
+    it 'returns a Float stability value' do
+      result = client.decay_momentum
+      expect(result[:stability]).to be_a(Float)
+    end
+
+    it 'returns stability within [0.0, 1.0]' do
+      result = client.decay_momentum
+      expect(result[:stability]).to be_between(0.0, 1.0)
+    end
+  end
 end

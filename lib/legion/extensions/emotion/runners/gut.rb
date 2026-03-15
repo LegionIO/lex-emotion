@@ -36,6 +36,17 @@ module Legion
             result
           end
 
+          def decay_momentum(**)
+            neutral = { urgency: 0.5, importance: 0.5, novelty: 0.5, familiarity: 0.5 }
+            momentum = emotion_momentum
+            momentum.update(neutral, 0.5)
+            stability = momentum.stability
+
+            Legion::Logging.debug "[emotion] momentum decay: stability=#{stability.round(2)}"
+
+            { decayed: true, stability: stability }
+          end
+
           def emotional_state(**)
             momentum = emotion_momentum
             state = momentum.emotional_state

@@ -104,6 +104,12 @@ Legion::Extensions::Emotion::Runners::Valence.modulate_attention(
 
 Emotional momentum is an exponential moving average (alpha = 0.3) over valence and arousal. It tracks `valence_ema`, `arousal_ema`, `stability`, and last 100 data points.
 
+## Actors
+
+| Actor | Interval | Description |
+|-------|----------|-------------|
+| `MomentumDecay` | Every 60s | Periodically drifts emotional momentum toward neutral valence via exponential decay, preventing permanent extreme states |
+
 ## Development
 
 ```bash

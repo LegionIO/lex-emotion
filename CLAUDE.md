@@ -27,7 +27,9 @@ lib/legion/extensions/emotion/
     momentum.rb   # Momentum class - EMA over valence/arousal, stability tracking
   runners/
     valence.rb    # evaluate_valence, aggregate_valences, modulate_attention, compute_arousal
-    gut.rb        # gut_instinct, emotional_state
+    gut.rb        # gut_instinct, emotional_state, decay_momentum
+  actors/
+    momentum_decay.rb  # MomentumDecay - Every 60s, drifts momentum toward neutral
 spec/
   legion/extensions/emotion/
     helpers/
@@ -82,6 +84,16 @@ Importance computation combines: domain weight (30%), impact scope (20%), irreve
 
 `Helpers::Baseline` tracks per-dimension running mean and standard deviation using exponential moving average. `normalize(raw, dimension)` returns the Z-score clamped to `[0, 1]`, so values within 1 stddev of the mean return ~0.5.
 
+## Actors
+
+| Actor | Interval | Runner | Method | Purpose |
+|---|---|---|---|---|
+| `MomentumDecay` | Every 60s | `Runners::Gut` | `decay_momentum` | Drifts emotional momentum toward neutral valence |
+
+### MomentumDecay
+
+Periodically nudges the `Helpers::Momentum` EMA toward a neutral valence vector (`urgency: 0.5, importance: 0.5, novelty: 0.5, familiarity: 0.5`) with a neutral arousal of `0.5`. This prevents momentum from being permanently stuck at an extreme emotional state after an intense event. Returns `{ decayed: true, stability: Float }`.
+
 ## Integration Points
 
 - **lex-tick**: `emotional_evaluation` phase calls `evaluate_valence`; `gut_instinct` phase calls `gut_instinct`
@@ -93,3 +105,4 @@ Importance computation combines: domain weight (30%), impact scope (20%), irreve
 - `@domain_counts` in `Runners::Valence` is not explicitly initialized; `compute_familiarity` handles nil safely with `&.fetch`
 - `Momentum#update` keeps last 100 history entries; `stability` = `1.0 - |delta_magnitude|`
 - `MAX_MAGNITUDE = Math.sqrt(4.0)` — used to normalize arousal to `[0, 1]`
+- `decay_momentum` calls `emotion_momentum.update(neutral, 0.5)` — the private memoized `@emotion_momentum` helper shared with `gut_instinct`; the actor runs without a task or subtask (`use_runner?: false`, `generate_task?: false`)

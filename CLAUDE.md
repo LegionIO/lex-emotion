@@ -11,7 +11,7 @@ Multi-dimensional emotional valence system for the LegionIO cognitive architectu
 ## Gem Info
 
 - **Gem name**: `lex-emotion`
-- **Version**: `0.1.0`
+- **Version**: `0.1.1`
 - **Module**: `Legion::Extensions::Emotion`
 - **Ruby**: `>= 3.4`
 - **License**: MIT
